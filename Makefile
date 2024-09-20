@@ -7,13 +7,13 @@ SRCS = $(shell find . -name '*.c')
 
 OBJS = $(SRCS:%.c=%.o)
 
-all: cloak
+all: cortex
 
-cloak: $(OBJS)
+cortex: $(OBJS)
 	$(CC) $(OBJS) -o $@ $(LDFLAGS)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-install: cloak
-	install -m0755 -D cloak $(PREFIX)/bin/cloak
+install: cortex
+	install -m0755 -D cortex $(PREFIX)/bin/cortex
