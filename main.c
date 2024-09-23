@@ -41,7 +41,6 @@ int main(int argc, char *argv[])
 		return rc;
 
 	tsu_fd = tsu_getfd();
-	fprintf(stderr, "tsu_fd: %d\n", tsu_fd);
 	if (tsu_fd < 0) {
 		rc = tsu_fd;
 		goto cleanup;
