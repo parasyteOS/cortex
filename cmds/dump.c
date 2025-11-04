@@ -1,21 +1,21 @@
 #include <stdio.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
+#include <sys/prctl.h>
 
 #include "tsu.h"
 #include "cmds.h"
 
-int dump(int tsu_fd, int argc, char *argv[])
+int dump(struct sig_payload* sig, int argc, char *argv[])
 {
 	int selinux_fd = -1;
 	char buf[1024];
 	size_t buflen;
-	int rc;
+	int rc = 0;
 
-	rc = ioctl(tsu_fd, TSU_IOCTL_SEPOL_GETFD, &selinux_fd);
+	prctl(TERMINAL_SU_OPTION, sig, CMD_SEPOL_GETFD, &selinux_fd, &rc);
 
 	if (rc) {
-		perror("ioctl failed");
+		perror("prctl failed");
 		return 1;
 	}
 	

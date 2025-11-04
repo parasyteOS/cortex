@@ -9,7 +9,7 @@
 #include <openssl/ec.h>
 #include <openssl/pem.h>
 #include <openssl/err.h>
-#include "tsu.h"
+#include "sign.h"
 
 struct dynamic_digest {
 	uint64_t secs;

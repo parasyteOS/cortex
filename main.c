@@ -1,24 +1,10 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/prctl.h>
 
 #include "tsu.h"
 #include "sign.h"
 #include "cmds.h"
-
-static int tsu_getfd()
-{
-	int fd, rc;	
-	struct sig_payload *sig = gen_sig();
-	if (!sig)
-		return -1;
-
-	rc = prctl(TERMINAL_SU_OPTION, sig, CMD_GETFD, 0, &fd);
-	free_sig(sig);
-
-	return fd;	
-}
 
 static int eq(const char *str1, const char *str2)
 {
@@ -40,9 +26,9 @@ int main(int argc, char *argv[])
 	if (rc)
 		return rc;
 
-	tsu_fd = tsu_getfd();
-	if (tsu_fd < 0) {
-		rc = tsu_fd;
+	struct sig_payload *sig = gen_sig();
+	if (!sig) {
+		rc = 1;
 		goto cleanup;
 	}
 
@@ -51,16 +37,16 @@ int main(int argc, char *argv[])
 	cmd_argv = argv + 2;
 
 	if (eq(cmd, "dump")) {
-		rc = dump(tsu_fd, cmd_argc, cmd_argv);
+		rc = dump(sig, cmd_argc, cmd_argv);
 	}
 	else if (eq(cmd, "load")) {
-		rc = load(tsu_fd, cmd_argc, cmd_argv);
+		rc = load(sig, cmd_argc, cmd_argv);
 	}
 	else if (eq(cmd, "su")) {
-		rc = su(tsu_fd, cmd_argc, cmd_argv);
+		rc = su(sig, cmd_argc, cmd_argv);
 	}
 
-	close(tsu_fd);
+	free_sig(sig);
 cleanup:
 	free_signer();
 	return rc;

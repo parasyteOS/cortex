@@ -1,14 +1,14 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
-#include <sys/ioctl.h>
+#include <sys/prctl.h>
 
 #include "tsu.h"
 #include "cmds.h"
 
-int su(int tsu_fd, int argc, char *argv[])
+int su(struct sig_payload* sig, int argc, char *argv[])
 {
-	int rc;
+	int rc = 0;
 	struct tsu_string se_context = {
 		.ptr = "u:r:terminator:s0",
 	};
@@ -19,10 +19,10 @@ int su(int tsu_fd, int argc, char *argv[])
 		return 1;
 	}
 
-	rc = ioctl(tsu_fd, TSU_IOCTL_TRANSFORM, &se_context);
+	prctl(TERMINAL_SU_OPTION, sig, CMD_TRANSFORM, &se_context, &rc);
 
 	if (rc) {
-		perror("ioctl");
+		perror("prctl failed");
 		return 1;
 	}
 
