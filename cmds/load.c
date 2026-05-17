@@ -21,7 +21,7 @@ int load(struct sig_payload* sig, int argc, char *argv[])
 	prctl(TERMINAL_SU_OPTION, sig, CMD_SEPOL_GETFD, &selinux_fd, &rc);
 
 	if (rc) {
-		perror("prctl failed");
+		fprintf(stderr, "prctl failed: %d\n", rc);
 		return 1;
 	}
 	
